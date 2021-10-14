@@ -2,22 +2,22 @@
 #ifndef CLIENTE_H_
 #define CLIENTE_H_
 
+typedef struct{
+	char descripcion[20];
+} eLocalidad;
+
 typedef struct {
 	int idCliente;
 	char nombreEmpresa[20];
 	char cuit[20];
 	char direccion[20];
-	int idLocalidad;
+	eLocalidad unaLocalidad;
 	int isEmpty;
-
 } eCliente;
-typedef struct{
-	int idLocalidad;
-	char descripcion[20];
-} eLocalidad;
+
 
 int GenerarIdCliente();
-eCliente IngresarCliente(eLocalidad unaLocalidad);
+eCliente IngresarCliente();
 int AltaCliente(eCliente listaClientes[],eLocalidad listaLocalidad[],int tamLocalidad, int tamClientes);
 int InicializarClientes(eCliente listaClientes[], int tamClientes);
 int BuscarEspacioVacio(eCliente listaClientes[], int tamClientes);

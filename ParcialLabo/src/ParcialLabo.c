@@ -24,7 +24,7 @@
 #define TAMAUXILIAR 1000
 #define TAMLOCALIDAD 100
 #define TAMTIPOS 3
-#define OPCIONES 11
+#define OPCIONES 12
 
 int main(void) {
 	setbuf(stdout, NULL);

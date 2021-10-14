@@ -20,6 +20,8 @@ void MenuDeOpciones(eCliente listaClientes[], eLocalidad listaLocalidad[],
 	int banderaPedidoIngresado;
 	int auxId;
 	int cantidadCliente;
+	int masCantidad;
+	int opcion2;
 	banderaClienteIngresado = 0;
 	banderaPedidoIngresado = 0;
 	cantidadCliente = 0;
@@ -27,7 +29,7 @@ void MenuDeOpciones(eCliente listaClientes[], eLocalidad listaLocalidad[],
 	InicializarPedidos(listaPedidos, listaAuxiliar, tamPedidos, tamAuxiliar);
 	do {
 		utn_getInt(&respuesta, 20,
-				"1)Alta de cliente\n2)Modificar datos de cliente\n3)Baja de cliente\n4)Crear pedido de recolección\n5)Procesar residuos\n6)Imprimir Clientes\n7)Imprimir Pedidos pendientes\n8)Imprimir Pedidos procesados\n9)Pedidos pendientes por localidad\n10)Promedio kilos por cliente\n11)Salir\nIngrese una opcion: ",
+				"1)Alta de cliente\n2)Modificar datos de cliente\n3)Baja de cliente\n4)Crear pedido de recolección\n5)Procesar residuos\n6)Imprimir Clientes\n7)Imprimir Pedidos pendientes\n8)Imprimir Pedidos procesados\n9)Pedidos pendientes por localidad\n10)Promedio kilos por cliente\n11)Clientes con mas pedidos\n12)Salir\nIngrese una opcion: ",
 				"Opcion invalida ", 1, opciones, 4, 0);
 		switch (respuesta) {
 		case 1:
@@ -176,6 +178,31 @@ void MenuDeOpciones(eCliente listaClientes[], eLocalidad listaLocalidad[],
 			}
 			break;
 		case 11:
+			utn_getInt(&opcion2, 20,
+					"1)Cliente con mas pedidos pendientes\n2)Cliente con mas pedidos procesados\n3)Cliente con mas pedidos\nIngrese una opcion: ",
+					"Opcion invalida ", 1, 3, 4, 0);
+			switch (opcion2) {
+			case 1:
+				respuestaFuncion = ClienteConMasPedidosPendientes(listaClientes,
+						listaLocalidad, tamLocalidad, listaPedidos,
+						listaAuxiliar, tamPedidos, tamAuxiliar, tamClientes,
+						&masCantidad);
+				break;
+			case 2:
+				respuestaFuncion = ClienteConMasPedidosProcesados(listaClientes,
+						listaLocalidad, tamLocalidad, listaPedidos,
+						listaAuxiliar, tamPedidos, tamAuxiliar, tamClientes,
+						&masCantidad);
+				break;
+			case 3:
+				respuestaFuncion = ClienteConMasPedidos(listaClientes,
+						listaLocalidad, tamLocalidad, listaPedidos,
+						listaAuxiliar, tamPedidos, tamAuxiliar, tamClientes,
+						&masCantidad);
+				break;
+			}
+			break;
+		case 12:
 			printf("Gracias por usar nuestro servicio\n");
 			break;
 		}
@@ -287,19 +314,14 @@ int ImprimirCantidadPendientes(eCliente listaClientes[],
 	printf(
 			"NOMBRE EMPRESA      CUIT        DIRECCION       LOCALIDAD       CANTIDAD\n");
 	for (int i = 0; i < tamClientes; i++) {
-		for (int j = 0; j < tamLocalidad; j++) {
-			if (listaClientes[i].isEmpty == FULL
-					&& listaPedidos[i].estado == PENDIENTE
-					&& listaClientes[i].idLocalidad
-							== listaLocalidad[j].idLocalidad) {
-				printf("%-15s %-15s %-15s %-15s %-3d\n",
-						listaClientes[i].nombreEmpresa, listaClientes[i].cuit,
-						listaClientes[i].direccion,
-						listaLocalidad[j].descripcion,
-						listaAuxiliar[i].cantidad++);
-			}
+		if (listaClientes[i].isEmpty == FULL
+				&& listaPedidos[i].estado == PENDIENTE) {
+			printf("%-15s %-15s %-15s %-15s %-3d\n",
+					listaClientes[i].nombreEmpresa, listaClientes[i].cuit,
+					listaClientes[i].direccion,
+					listaClientes[i].unaLocalidad.descripcion,
+					listaAuxiliar[i].cantidad++);
 		}
-
 	}
 	return banderaListaVacia;
 }
@@ -329,10 +351,10 @@ int CantidadPedientesPorLocalidad(eCliente listaClientes[],
 		for (int i = 0; i < tamClientes; i++) {
 			if (listaClientes[i].isEmpty == FULL
 					&& listaPedidos[i].estado == PENDIENTE
-					&& strcmp(auxLocalidad, listaLocalidad[i].descripcion)
-							== 0) {
+					&& strcmp(auxLocalidad,
+							listaClientes[i].unaLocalidad.descripcion) == 0) {
 				printf("Pedidos pendientes para: %-15s %-3d\n",
-						listaLocalidad[i].descripcion,
+						listaClientes[i].unaLocalidad.descripcion,
 						listaAuxiliar[i].cantidad++);
 				retorno = 0;
 			}
@@ -352,10 +374,8 @@ int ImprimirLocalidades(eCliente listaClientes[], ePedido listaPedidos[],
 	banderaListaVacia = 0;
 	for (int i = 0; i < tamClientes; i++) {
 		if (listaClientes[i].isEmpty == FULL
-				&& listaPedidos[i].estado == PENDIENTE
-				&& listaClientes[i].idLocalidad
-						== listaLocalidad[i].idLocalidad) {
-			printf("%-15s\n", listaLocalidad[i].descripcion);
+				&& listaPedidos[i].estado == PENDIENTE) {
+			printf("%-15s\n", listaClientes[i].unaLocalidad.descripcion);
 		}
 	}
 	return banderaListaVacia;
@@ -388,6 +408,76 @@ int KilosPromedioPorCliente(eCliente listaClientes[], ePedido listaPedidos[],
 		promedio = acumuladorKilos / cantidadClientes;
 		printf("Kilos totales por cliente: %-7.2f\n", promedio);
 		retorno = 0;
+	}
+	return retorno;
+}
+int ClienteConMasPedidos(eCliente listaClientes[], eLocalidad listaLocalidad[],
+		int tamLocalidad, ePedido listaPedidos[], eAuxiliar listaAuxiliar[],
+		int tamPedidos, int tamAuxiliar, int tamClientes, int *masCantidad) {
+	int retorno;
+	retorno = -1;
+	for (int i = 0; i < tamClientes; i++) {
+		for (int j = 0; j < tamAuxiliar; j++) {
+			if (listaClientes[i].isEmpty == FULL
+					&& listaAuxiliar[i].isEmpty == FULL) {
+				*masCantidad = listaAuxiliar[i].cantidad++;
+				if (*masCantidad < listaAuxiliar[i].cantidad) {
+					*masCantidad = listaAuxiliar[i].cantidad++;
+					printf("a)\n");
+					ImprimirClientes(listaClientes, listaLocalidad,
+							tamLocalidad, tamClientes);
+					break;
+				}
+			}
+		}
+	}
+	return retorno;
+}
+int ClienteConMasPedidosPendientes(eCliente listaClientes[],
+		eLocalidad listaLocalidad[], int tamLocalidad, ePedido listaPedidos[],
+		eAuxiliar listaAuxiliar[], int tamPedidos, int tamAuxiliar,
+		int tamClientes, int *masCantidad) {
+	int retorno;
+	retorno = -1;
+	for (int i = 0; i < tamClientes; i++) {
+		for (int j = 0; j < tamAuxiliar; j++) {
+			if (listaClientes[i].isEmpty == FULL
+					&& listaAuxiliar[i].isEmpty == FULL
+					&& listaPedidos[i].estado == PENDIENTE) {
+				*masCantidad = listaAuxiliar[i].cantidad++;
+				if (*masCantidad < listaAuxiliar[i].cantidad) {
+					*masCantidad = listaAuxiliar[i].cantidad++;
+					printf("b)\n");
+					ImprimirClientes(listaClientes, listaLocalidad,
+							tamLocalidad, tamClientes);
+					break;
+				}
+			}
+		}
+	}
+	return retorno;
+}
+int ClienteConMasPedidosProcesados(eCliente listaClientes[],
+		eLocalidad listaLocalidad[], int tamLocalidad, ePedido listaPedidos[],
+		eAuxiliar listaAuxiliar[], int tamPedidos, int tamAuxiliar,
+		int tamClientes, int *masCantidad) {
+	int retorno;
+	retorno = -1;
+	for (int i = 0; i < tamClientes; i++) {
+		for (int j = 0; j < tamAuxiliar; j++) {
+			if (listaClientes[i].isEmpty == FULL
+					&& listaAuxiliar[i].isEmpty == FULL
+					&& listaPedidos[i].estado == COMPLETADO) {
+				*masCantidad = listaAuxiliar[i].cantidad++;
+				if (*masCantidad < listaAuxiliar[i].cantidad) {
+					*masCantidad = listaAuxiliar[i].cantidad++;
+					printf("c)\n");
+					ImprimirClientes(listaClientes, listaLocalidad,
+							tamLocalidad, tamClientes);
+					break;
+				}
+			}
+		}
 	}
 	return retorno;
 }

@@ -2,7 +2,7 @@
 /// \fn eCliente IngresarCliente()
 /// \brief Ingresa un cliente, para que el usuario cargue cada valor de la estructura eCliente
 /// \return Una estructura eCliente con sus datos cargados
-eCliente IngresarCliente(eLocalidad unaLocalidad) {
+eCliente IngresarCliente() {
 	eCliente unCliente;
 	char auxNombre[20];
 	char auxCuit[20];
@@ -12,7 +12,6 @@ eCliente IngresarCliente(eLocalidad unaLocalidad) {
 	int respuestaCuit;
 	int respuestaDireccion;
 	int respuestaLocalidad;
-	int id;
 
 	respuestaNombre = utn_getName(auxNombre, 20, "Ingrese nombre de empresa: ",
 			"Nombre invalido ", 4);
@@ -23,12 +22,10 @@ eCliente IngresarCliente(eLocalidad unaLocalidad) {
 			"Localidad invalida ", 4);
 	if (respuestaCuit == 1 && respuestaDireccion == 1 && respuestaLocalidad == 1
 			&& respuestaNombre == 1) {
-		id = GenerarIdCliente();
-		unCliente.idCliente = id;
-		unaLocalidad.idLocalidad = id - 1;
+		unCliente.idCliente = GenerarIdCliente();
 		strncpy(unCliente.nombreEmpresa, auxNombre, 20);
 		strncpy(unCliente.direccion, auxDireccion, 20);
-		strncpy(unaLocalidad.descripcion, auxLocalidad, 20);
+		strncpy(unCliente.unaLocalidad.descripcion, auxLocalidad, 20);
 		strncpy(unCliente.cuit, auxCuit, 20);
 		unCliente.isEmpty = FULL;
 	} else {
@@ -49,7 +46,7 @@ int AltaCliente(eCliente listaClientes[], eLocalidad listaLocalidad[],
 	index = BuscarEspacioVacio(listaClientes, tamClientes);
 	retorno = -1;
 	if (index != -1) {
-		listaClientes[index] = IngresarCliente(listaLocalidad[index]);
+		listaClientes[index] = IngresarCliente();
 		printf("Cliente ingresado ID: %d\n", listaClientes[index].idCliente);
 		retorno = 0;
 	} else {
@@ -132,7 +129,8 @@ int ModificarCliente(eCliente listaClientes[], eLocalidad listaLocalidad[],
 	if (strcmp(respuesta, "si") == 0 && respuestaDireccion == 1
 			&& respuestaLocalidad == 1) {
 		strncpy(listaClientes[index].direccion, auxDireccion, 20);
-		strncpy(listaLocalidad[index].descripcion, auxLocalidad, 20);
+		strncpy(listaClientes[index].unaLocalidad.descripcion, auxLocalidad,
+				20);
 		printf("Usted modifico el id: %d correctamente\n",
 				listaClientes[index].idCliente);
 		retorno = 0;
@@ -193,11 +191,9 @@ int ImprimirClientes(eCliente listaClientes[], eLocalidad listaLocalidad[],
 	banderaListaVacia = 0;
 	printf("ID   NOMBRE EMPRESA      CUIT        DIRECCION       LOCALIDAD\n");
 	for (int i = 0; i < tamClientes; i++) {
-		for (int j = 0; j < tamLocalidad; j++) {
-			if (listaClientes[i].isEmpty == FULL) {
-				MostrarCliente(listaClientes[i], listaLocalidad[j]);
-				banderaListaVacia = 1;
-			}
+		if (listaClientes[i].isEmpty == FULL) {
+			MostrarCliente(listaClientes[i], listaLocalidad[i]);
+			banderaListaVacia = 1;
 		}
 	}
 	return banderaListaVacia;
@@ -206,11 +202,9 @@ int ImprimirClientes(eCliente listaClientes[], eLocalidad listaLocalidad[],
 /// \brief Muestra un cliente
 /// \param unCliente El cliente a mostrar
 void MostrarCliente(eCliente unCliente, eLocalidad unaLocalidad) {
-	if (unCliente.idLocalidad == unaLocalidad.idLocalidad) {
-		printf("%-4d %-15s %-15s %-15s %-15s\n", unCliente.idCliente,
-				unCliente.nombreEmpresa, unCliente.cuit, unCliente.direccion,
-				unaLocalidad.descripcion);
-	}
+	printf("%-4d %-15s %-15s %-15s %-15s\n", unCliente.idCliente,
+			unCliente.nombreEmpresa, unCliente.cuit, unCliente.direccion,
+			unCliente.unaLocalidad.descripcion);
 
 }
 

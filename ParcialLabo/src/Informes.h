@@ -41,5 +41,16 @@ int CantidadPedientesPorLocalidad(eCliente listaClientes[],
 int KilosPromedioPorCliente(eCliente listaClientes[], ePedido listaPedidos[],
 		eAuxiliar listaAuxiliar[], int tamPedidos, int tamAuxiliar,
 		int tamClientes, int cantidadClientes);
+int ClienteConMasPedidos(eCliente listaClientes[], eLocalidad listaLocalidad[],
+		int tamLocalidad, ePedido listaPedidos[], eAuxiliar listaAuxiliar[],
+		int tamPedidos, int tamAuxiliar, int tamClientes, int *masCantidad);
+int ClienteConMasPedidosProcesados(eCliente listaClientes[],
+		eLocalidad listaLocalidad[], int tamLocalidad, ePedido listaPedidos[],
+		eAuxiliar listaAuxiliar[], int tamPedidos, int tamAuxiliar,
+		int tamClientes, int *masCantidad);
+int ClienteConMasPedidosPendientes(eCliente listaClientes[],
+		eLocalidad listaLocalidad[], int tamLocalidad, ePedido listaPedidos[],
+		eAuxiliar listaAuxiliar[], int tamPedidos, int tamAuxiliar,
+		int tamClientes, int *masCantidad);
 
 #endif /* INFORMES_H_ */

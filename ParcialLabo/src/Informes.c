@@ -187,18 +187,27 @@ void MenuDeOpciones(eCliente listaClientes[], eLocalidad listaLocalidad[],
 						listaLocalidad, tamLocalidad, listaPedidos,
 						listaAuxiliar, tamPedidos, tamAuxiliar, tamClientes,
 						&masCantidad);
+				if (respuestaFuncion == -1) {
+					printf("Lista de clientes vacia\n");
+				}
 				break;
 			case 2:
 				respuestaFuncion = ClienteConMasPedidosProcesados(listaClientes,
 						listaLocalidad, tamLocalidad, listaPedidos,
 						listaAuxiliar, tamPedidos, tamAuxiliar, tamClientes,
 						&masCantidad);
+				if (respuestaFuncion == -1) {
+					printf("Lista de clientes vacia\n");
+				}
 				break;
 			case 3:
 				respuestaFuncion = ClienteConMasPedidos(listaClientes,
 						listaLocalidad, tamLocalidad, listaPedidos,
 						listaAuxiliar, tamPedidos, tamAuxiliar, tamClientes,
 						&masCantidad);
+				if (respuestaFuncion == -1) {
+					printf("Lista de clientes vacia\n");
+				}
 				break;
 			}
 			break;
@@ -426,7 +435,7 @@ int ClienteConMasPedidos(eCliente listaClientes[], eLocalidad listaLocalidad[],
 					printf("a)\n");
 					ImprimirClientes(listaClientes, listaLocalidad,
 							tamLocalidad, tamClientes);
-					break;
+					retorno = 0;
 				}
 			}
 		}
@@ -450,7 +459,7 @@ int ClienteConMasPedidosPendientes(eCliente listaClientes[],
 					printf("b)\n");
 					ImprimirClientes(listaClientes, listaLocalidad,
 							tamLocalidad, tamClientes);
-					break;
+					retorno = 0;
 				}
 			}
 		}
@@ -474,7 +483,7 @@ int ClienteConMasPedidosProcesados(eCliente listaClientes[],
 					printf("c)\n");
 					ImprimirClientes(listaClientes, listaLocalidad,
 							tamLocalidad, tamClientes);
-					break;
+					retorno = 0;
 				}
 			}
 		}

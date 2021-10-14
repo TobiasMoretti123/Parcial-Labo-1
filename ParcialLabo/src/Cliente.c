@@ -2,7 +2,7 @@
 /// \fn eCliente IngresarCliente()
 /// \brief Ingresa un cliente, para que el usuario cargue cada valor de la estructura eCliente
 /// \return Una estructura eCliente con sus datos cargados
-eCliente IngresarCliente() {
+eCliente IngresarCliente(eLocalidad unaLocalidad) {
 	eCliente unCliente;
 	char auxNombre[20];
 	char auxCuit[20];
@@ -12,6 +12,7 @@ eCliente IngresarCliente() {
 	int respuestaCuit;
 	int respuestaDireccion;
 	int respuestaLocalidad;
+	int id;
 
 	respuestaNombre = utn_getName(auxNombre, 20, "Ingrese nombre de empresa: ",
 			"Nombre invalido ", 4);
@@ -22,10 +23,12 @@ eCliente IngresarCliente() {
 			"Localidad invalida ", 4);
 	if (respuestaCuit == 1 && respuestaDireccion == 1 && respuestaLocalidad == 1
 			&& respuestaNombre == 1) {
-		unCliente.idCliente = GenerarIdCliente();
+		id = GenerarIdCliente();
+		unCliente.idCliente = id;
+		unaLocalidad.idLocalidad = id - 1;
 		strncpy(unCliente.nombreEmpresa, auxNombre, 20);
 		strncpy(unCliente.direccion, auxDireccion, 20);
-		strncpy(unCliente.localidad, auxLocalidad, 20);
+		strncpy(unaLocalidad.descripcion, auxLocalidad, 20);
 		strncpy(unCliente.cuit, auxCuit, 20);
 		unCliente.isEmpty = FULL;
 	} else {
@@ -39,13 +42,14 @@ eCliente IngresarCliente() {
 /// \param listaClientes La lista de clientes a ser dada de alta
 /// \param tamClientes El tamaño de la lista de clientes
 /// \return 0 en caso de cargarse correctamente -1 si no
-int AltaCliente(eCliente listaClientes[], int tamClientes) {
+int AltaCliente(eCliente listaClientes[], eLocalidad listaLocalidad[],
+		int tamLocalidad, int tamClientes) {
 	int retorno;
 	int index;
 	index = BuscarEspacioVacio(listaClientes, tamClientes);
 	retorno = -1;
 	if (index != -1) {
-		listaClientes[index] = IngresarCliente();
+		listaClientes[index] = IngresarCliente(listaLocalidad[index]);
 		printf("Cliente ingresado ID: %d\n", listaClientes[index].idCliente);
 		retorno = 0;
 	} else {
@@ -101,7 +105,8 @@ int BajaCliente(eCliente listaClientes[], int tamClientes, int id) {
 /// \param tamClientes El tamaño de la lista de clientes
 /// \param id El id auxiliar a ser comparado
 /// \return 0 si se modifico correctamente -1 si hubo algun error o se cancelo la modificacion
-int ModificarCliente(eCliente listaClientes[], int tamClientes, int id) {
+int ModificarCliente(eCliente listaClientes[], eLocalidad listaLocalidad[],
+		int tamLocalidad, int tamClientes, int id) {
 	int retorno;
 	int index;
 	char respuesta[3];
@@ -127,7 +132,7 @@ int ModificarCliente(eCliente listaClientes[], int tamClientes, int id) {
 	if (strcmp(respuesta, "si") == 0 && respuestaDireccion == 1
 			&& respuestaLocalidad == 1) {
 		strncpy(listaClientes[index].direccion, auxDireccion, 20);
-		strncpy(listaClientes[index].localidad, auxLocalidad, 20);
+		strncpy(listaLocalidad[index].descripcion, auxLocalidad, 20);
 		printf("Usted modifico el id: %d correctamente\n",
 				listaClientes[index].idCliente);
 		retorno = 0;
@@ -182,14 +187,17 @@ int BuscarEspacioVacio(eCliente listaClientes[], int tamClientes) {
 /// \param listaClientes La lista a ser impresa
 /// \param tamClientes El tamaño de la lista de clientes
 /// \return 0 si la lista esta vacia 1 si no lo esta
-int ImprimirClientes(eCliente listaClientes[], int tamClientes) {
+int ImprimirClientes(eCliente listaClientes[], eLocalidad listaLocalidad[],
+		int tamLocalidad, int tamClientes) {
 	int banderaListaVacia;
 	banderaListaVacia = 0;
 	printf("ID   NOMBRE EMPRESA      CUIT        DIRECCION       LOCALIDAD\n");
 	for (int i = 0; i < tamClientes; i++) {
-		if (listaClientes[i].isEmpty == FULL) {
-			MostrarCliente(listaClientes[i]);
-			banderaListaVacia = 1;
+		for (int j = 0; j < tamLocalidad; j++) {
+			if (listaClientes[i].isEmpty == FULL) {
+				MostrarCliente(listaClientes[i], listaLocalidad[j]);
+				banderaListaVacia = 1;
+			}
 		}
 	}
 	return banderaListaVacia;
@@ -197,9 +205,12 @@ int ImprimirClientes(eCliente listaClientes[], int tamClientes) {
 /// \fn void MostrarCliente(eCliente)
 /// \brief Muestra un cliente
 /// \param unCliente El cliente a mostrar
-void MostrarCliente(eCliente unCliente) {
-	printf("%-4d %-15s %-15s %-15s %-15s\n", unCliente.idCliente,
-			unCliente.nombreEmpresa, unCliente.cuit, unCliente.direccion,
-			unCliente.localidad);
+void MostrarCliente(eCliente unCliente, eLocalidad unaLocalidad) {
+	if (unCliente.idLocalidad == unaLocalidad.idLocalidad) {
+		printf("%-4d %-15s %-15s %-15s %-15s\n", unCliente.idCliente,
+				unCliente.nombreEmpresa, unCliente.cuit, unCliente.direccion,
+				unaLocalidad.descripcion);
+	}
+
 }
 

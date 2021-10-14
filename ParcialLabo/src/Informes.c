@@ -10,9 +10,10 @@
 /// \param tamClientes el tamaño de la lista de clientes
 /// \param tamTipos el tamaño de la lista de tipos
 /// \param opciones La cantidad de opciones que tiene el menu
-void MenuDeOpciones(eCliente listaClientes[], ePedido listaPedidos[],
-		eAuxiliar listaAuxiliar[], eTipo listaTipos[], int tamPedidos,
-		int tamAuxiliar, int tamClientes, int tamTipos, int opciones) {
+void MenuDeOpciones(eCliente listaClientes[], eLocalidad listaLocalidad[],
+		eTipo listaTipos[], int tamTipos, int tamLocalidad,
+		ePedido listaPedidos[], eAuxiliar listaAuxiliar[], int tamPedidos,
+		int tamAuxiliar, int tamClientes, int opciones) {
 	int respuesta;
 	int respuestaFuncion;
 	int banderaClienteIngresado;
@@ -30,7 +31,8 @@ void MenuDeOpciones(eCliente listaClientes[], ePedido listaPedidos[],
 				"Opcion invalida ", 1, opciones, 4, 0);
 		switch (respuesta) {
 		case 1:
-			respuestaFuncion = AltaCliente(listaClientes, tamClientes);
+			respuestaFuncion = AltaCliente(listaClientes, listaLocalidad,
+					tamLocalidad, tamClientes);
 			if (respuestaFuncion == 0) {
 				banderaClienteIngresado = 1;
 				cantidadCliente = cantidadCliente + 1;
@@ -40,12 +42,13 @@ void MenuDeOpciones(eCliente listaClientes[], ePedido listaPedidos[],
 			break;
 		case 2:
 			if (banderaClienteIngresado == 1) {
-				ImprimirClientes(listaClientes, tamClientes);
+				ImprimirClientes(listaClientes, listaLocalidad, tamLocalidad,
+						tamClientes);
 				utn_getInt(&auxId, 20,
 						"De la lista ingrese el id que desee modificar: ",
 						"Id invalido ", 100, 100000, 4, 0);
-				respuestaFuncion = ModificarCliente(listaClientes, tamClientes,
-						auxId);
+				respuestaFuncion = ModificarCliente(listaClientes,
+						listaLocalidad, tamLocalidad, tamClientes, auxId);
 				if (respuestaFuncion == -1) {
 					printf(
 							"Usted cancelo la modificacion o su ID no fue encontrado\n");
@@ -57,7 +60,8 @@ void MenuDeOpciones(eCliente listaClientes[], ePedido listaPedidos[],
 			break;
 		case 3:
 			if (banderaClienteIngresado == 1) {
-				ImprimirClientes(listaClientes, tamClientes);
+				ImprimirClientes(listaClientes, listaLocalidad, tamLocalidad,
+						tamClientes);
 				utn_getInt(&auxId, 20,
 						"De la lista ingrese el id que desee dar de baja: ",
 						"Id invalido ", 100, 100000, 4, 0);
@@ -75,7 +79,8 @@ void MenuDeOpciones(eCliente listaClientes[], ePedido listaPedidos[],
 			break;
 		case 4:
 			if (banderaClienteIngresado == 1) {
-				ImprimirClientes(listaClientes, tamClientes);
+				ImprimirClientes(listaClientes, listaLocalidad, tamLocalidad,
+						tamClientes);
 				utn_getInt(&auxId, 20, "Ingrese ID cliente: ", "Id invalido ",
 						100, 100000, 4, 0);
 				respuestaFuncion = BuscarIdCliente(listaClientes, tamClientes,
@@ -107,8 +112,8 @@ void MenuDeOpciones(eCliente listaClientes[], ePedido listaPedidos[],
 		case 6:
 			if (banderaClienteIngresado == 1 && banderaPedidoIngresado == 1) {
 				respuestaFuncion = ImprimirCantidadPendientes(listaClientes,
-						listaPedidos, listaAuxiliar, tamPedidos, tamAuxiliar,
-						tamClientes);
+						listaLocalidad, tamLocalidad, listaPedidos,
+						listaAuxiliar, tamPedidos, tamAuxiliar, tamClientes);
 				if (respuestaFuncion == 0) {
 					printf("Lista de clientes vacia\n");
 				}
@@ -147,8 +152,8 @@ void MenuDeOpciones(eCliente listaClientes[], ePedido listaPedidos[],
 		case 9:
 			if (banderaClienteIngresado == 1 && banderaPedidoIngresado == 1) {
 				respuestaFuncion = CantidadPedientesPorLocalidad(listaClientes,
-						listaPedidos, listaAuxiliar, tamPedidos, tamAuxiliar,
-						tamClientes);
+						listaLocalidad, tamLocalidad, listaPedidos,
+						listaAuxiliar, tamPedidos, tamAuxiliar, tamClientes);
 				if (respuesta == -1) {
 					printf("No se encontro esa localidad");
 				}
@@ -273,7 +278,8 @@ void MostrarPedidosProcesados(eCliente unCliente, eTipo unTipo,
 /// \param tamAuxiliar el tamaño de la lista de auxiliares
 /// \param tamClientes el tamaño de la lista de clientes
 /// \return 0 si la lista esta vacia 1 si no lo esta
-int ImprimirCantidadPendientes(eCliente listaClientes[], ePedido listaPedidos[],
+int ImprimirCantidadPendientes(eCliente listaClientes[],
+		eLocalidad listaLocalidad[], int tamLocalidad, ePedido listaPedidos[],
 		eAuxiliar listaAuxiliar[], int tamPedidos, int tamAuxiliar,
 		int tamClientes) {
 	int banderaListaVacia;
@@ -281,13 +287,19 @@ int ImprimirCantidadPendientes(eCliente listaClientes[], ePedido listaPedidos[],
 	printf(
 			"NOMBRE EMPRESA      CUIT        DIRECCION       LOCALIDAD       CANTIDAD\n");
 	for (int i = 0; i < tamClientes; i++) {
-		if (listaClientes[i].isEmpty == FULL
-				&& listaPedidos[i].estado == PENDIENTE) {
-			printf("%-15s %-15s %-15s %-15s %-3d\n",
-					listaClientes[i].nombreEmpresa, listaClientes[i].cuit,
-					listaClientes[i].direccion, listaClientes[i].localidad,
-					listaAuxiliar[i].cantidad++);
+		for (int j = 0; j < tamLocalidad; j++) {
+			if (listaClientes[i].isEmpty == FULL
+					&& listaPedidos[i].estado == PENDIENTE
+					&& listaClientes[i].idLocalidad
+							== listaLocalidad[j].idLocalidad) {
+				printf("%-15s %-15s %-15s %-15s %-3d\n",
+						listaClientes[i].nombreEmpresa, listaClientes[i].cuit,
+						listaClientes[i].direccion,
+						listaLocalidad[j].descripcion,
+						listaAuxiliar[i].cantidad++);
+			}
 		}
+
 	}
 	return banderaListaVacia;
 }
@@ -302,22 +314,25 @@ int ImprimirCantidadPendientes(eCliente listaClientes[], ePedido listaPedidos[],
 /// \param tamClientes el tamaño de la lista de clientes
 /// \return 0 si la lista esta vacia 1 si no lo esta
 int CantidadPedientesPorLocalidad(eCliente listaClientes[],
-		ePedido listaPedidos[], eAuxiliar listaAuxiliar[], int tamPedidos,
-		int tamAuxiliar, int tamClientes) {
+		eLocalidad listaLocalidad[], int tamLocalidad, ePedido listaPedidos[],
+		eAuxiliar listaAuxiliar[], int tamPedidos, int tamAuxiliar,
+		int tamClientes) {
 	int retorno;
 	char auxLocalidad[20];
 	int respuestaLocalidad;
 	retorno = -1;
-	ImprimirLocalidades(listaClientes, tamClientes);
+	ImprimirLocalidades(listaClientes, listaPedidos, listaLocalidad,
+			tamLocalidad, tamClientes, tamPedidos);
 	respuestaLocalidad = utn_getText(auxLocalidad, 20,
 			"Ingrese una localidad: ", "Localidad invalida ", 4);
 	if (respuestaLocalidad == 1) {
 		for (int i = 0; i < tamClientes; i++) {
 			if (listaClientes[i].isEmpty == FULL
 					&& listaPedidos[i].estado == PENDIENTE
-					&& strcmp(auxLocalidad, listaClientes[i].localidad) == 0) {
+					&& strcmp(auxLocalidad, listaLocalidad[i].descripcion)
+							== 0) {
 				printf("Pedidos pendientes para: %-15s %-3d\n",
-						listaClientes[i].localidad,
+						listaLocalidad[i].descripcion,
 						listaAuxiliar[i].cantidad++);
 				retorno = 0;
 			}
@@ -330,12 +345,17 @@ int CantidadPedientesPorLocalidad(eCliente listaClientes[],
 /// \param listaClientes Lista de clientes a ser impresa
 /// \param tamClientes El tamaño de la lista de clientes
 /// \return 0 si la lista esta vacia 1 si no lo esta
-int ImprimirLocalidades(eCliente listaClientes[], int tamClientes) {
+int ImprimirLocalidades(eCliente listaClientes[], ePedido listaPedidos[],
+		eLocalidad listaLocalidad[], int tamLocalidad, int tamClientes,
+		int tamPedidos) {
 	int banderaListaVacia;
 	banderaListaVacia = 0;
 	for (int i = 0; i < tamClientes; i++) {
-		if (listaClientes[i].isEmpty == FULL) {
-			printf("%-15s\n", listaClientes[i].localidad);
+		if (listaClientes[i].isEmpty == FULL
+				&& listaPedidos[i].estado == PENDIENTE
+				&& listaClientes[i].idLocalidad
+						== listaLocalidad[i].idLocalidad) {
+			printf("%-15s\n", listaLocalidad[i].descripcion);
 		}
 	}
 	return banderaListaVacia;
@@ -363,11 +383,11 @@ int KilosPromedioPorCliente(eCliente listaClientes[], ePedido listaPedidos[],
 					&& listaAuxiliar[i].isEmpty == FULL) {
 				acumuladorKilos += listaAuxiliar[i].kilos;
 				listaAuxiliar[i].cantidad = cantidadClientes;
-				promedio = acumuladorKilos / cantidadClientes;
-				printf("Kilos totales por cliente: %-7.2f\n", promedio);
-				retorno = 0;
 			}
 		}
+		promedio = acumuladorKilos / cantidadClientes;
+		printf("Kilos totales por cliente: %-7.2f\n", promedio);
+		retorno = 0;
 	}
 	return retorno;
 }

@@ -14,9 +14,10 @@
 #include "utn.h"
 #include "validaciones.h"
 
-void MenuDeOpciones(eCliente listaClientes[], ePedido listaPedidos[],
-		eAuxiliar listaAuxiliar[], eTipo listaTipos[], int tamPedidos,
-		int tamAuxiliar, int tamClientes, int tamTipos, int opciones);
+void MenuDeOpciones(eCliente listaClientes[], eLocalidad listaLocalidad[],
+		eTipo listaTipos[], int tamTipos, int tamLocalidad,
+		ePedido listaPedidos[], eAuxiliar listaAuxiliar[], int tamPedidos,
+		int tamAuxiliar, int tamClientes, int opciones);
 int ImprimirPedidosPendientes(eCliente listaClientes[], ePedido listaPedidos[],
 		eAuxiliar listaAuxiliar[], int tamPedidos, int tamAuxiliar,
 		int tamClientes);
@@ -26,13 +27,17 @@ int ImprimirPedidosProcesados(eCliente listaClientes[], ePedido listaPedidos[],
 		eTipo listaTipos[], int tamPedidos, int tamClientes, int tamTipos);
 void MostrarPedidosProcesados(eCliente unCliente, eTipo unTipo,
 		ePedido unPedido);
-int ImprimirCantidadPendientes(eCliente listaClientes[], ePedido listaPedidos[],
+int ImprimirCantidadPendientes(eCliente listaClientes[],
+		eLocalidad listaLocalidad[], int tamLocalidad, ePedido listaPedidos[],
 		eAuxiliar listaAuxiliar[], int tamPedidos, int tamAuxiliar,
 		int tamClientes);
-int ImprimirLocalidades(eCliente listaClientes[], int tamClientes);
+int ImprimirLocalidades(eCliente listaClientes[], ePedido listaPedidos[],
+		eLocalidad listaLocalidad[], int tamLocalidad, int tamClientes,
+		int tamPedidos);
 int CantidadPedientesPorLocalidad(eCliente listaClientes[],
-		ePedido listaPedidos[], eAuxiliar listaAuxiliar[], int tamPedidos,
-		int tamAuxiliar, int tamClientes);
+		eLocalidad listaLocalidad[], int tamLocalidad, ePedido listaPedidos[],
+		eAuxiliar listaAuxiliar[], int tamPedidos, int tamAuxiliar,
+		int tamClientes);
 int KilosPromedioPorCliente(eCliente listaClientes[], ePedido listaPedidos[],
 		eAuxiliar listaAuxiliar[], int tamPedidos, int tamAuxiliar,
 		int tamClientes, int cantidadClientes);

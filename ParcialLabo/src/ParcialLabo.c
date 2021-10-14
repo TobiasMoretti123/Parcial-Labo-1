@@ -22,19 +22,21 @@
 #define TAMCLIENTES 100
 #define TAMPEDIDOS 1000
 #define TAMAUXILIAR 1000
+#define TAMLOCALIDAD 100
 #define TAMTIPOS 3
 #define OPCIONES 11
 
 int main(void) {
 	setbuf(stdout, NULL);
 	eCliente listaClientes[TAMCLIENTES];
+	eLocalidad listaLocalidades[TAMLOCALIDAD];
 	ePedido listaPedidos[TAMPEDIDOS];
 	eAuxiliar listaAuxiliar[TAMAUXILIAR];
 	eTipo listaTipos[TAMTIPOS] = { { 1, 0, "HDPE", 0 }, { 2, 0, "LDPE", 0 }, {
 			3, 0, "PP", 0 } };
-	MenuDeOpciones(listaClientes, listaPedidos, listaAuxiliar, listaTipos,
-	TAMPEDIDOS,
-	TAMAUXILIAR, TAMCLIENTES, TAMTIPOS, OPCIONES);
+	MenuDeOpciones(listaClientes, listaLocalidades, listaTipos, TAMTIPOS,
+	TAMLOCALIDAD, listaPedidos, listaAuxiliar, TAMPEDIDOS, TAMAUXILIAR,
+	TAMCLIENTES, OPCIONES);
 
 	return EXIT_SUCCESS;
 }
